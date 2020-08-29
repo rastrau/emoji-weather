@@ -1,8 +1,8 @@
-name: Weather map, morning
+name: Weather map, afternoon
 
 on:
   schedule:
-  - cron:  '30 4 * * *'
+  - cron:  '30 13 * * *'
 
 env:
   OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
@@ -10,8 +10,8 @@ env:
   TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }} 
   TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }} 
   TWITTER_API_KEY_SECRET: ${{ secrets.TWITTER_API_KEY_SECRET }}
-  TARGET_TIMES_LOCAL: '09:00,15:00'
-  TARGET_TIMES_HUMAN: 'Morning,Afternoon' 
+  TARGET_TIMES_LOCAL: '20:00'
+  TARGET_TIMES_HUMAN: 'Evening' 
 
 jobs:
   tweet-weather:
