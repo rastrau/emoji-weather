@@ -171,15 +171,6 @@ if __name__ == "__main__":
     testing = False
 
     config = Config.Config()
-<<<<<<< Updated upstream
-    
-    OPENWEATHERMAP_API_KEY = os.environ.get('OPENWEATHERMAP_API_KEY')
-    TWITTER_ACCESS_TOKEN = os.environ.get('TWITTER_ACCESS_TOKEN')
-    TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
-    TWITTER_API_KEY = os.environ.get('TWITTER_API_KEY')
-    TWITTER_API_KEY_SECRET = os.environ.get('TWITTER_API_KEY_SECRET')
-=======
->>>>>>> Stashed changes
 
     if not testing:    
         OPENWEATHERMAP_API_KEY = os.environ.get('OPEN_WEATHER_API_KEY')
@@ -223,7 +214,7 @@ if __name__ == "__main__":
 
 
     if testing:
-        with codecs.open("test.txt", "w", "utf8") as f:
+        with codecs.open("tweets.txt", "w", "utf8") as f:
             for weather_tweet in weather_tweets:
                 f.write(weather_tweet)
                 f.write("--------------------------------------------\n")
