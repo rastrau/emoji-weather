@@ -68,8 +68,12 @@ class MeteoMap:
 
     def compile_weather_tweet(self, timespan):
         self.emojify_weather()
-        weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ Fᴏʀᴇᴄᴀsᴛ\n\n" % (timespan,
-                                                          meteomap.timestamp.strftime('%d. %b'))
+        if timespan.startswith("-"):
+            weather_tweet = weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ Fᴏʀᴇᴄᴀsᴛ\n\n" % (meteomap.timestamp.strftime('%d. %b'),
+                                                                               timespan[1:])
+        else:
+            weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ Fᴏʀᴇᴄᴀsᴛ\n\n" % (timespan,
+                                                               meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
             emoji = self.weather.get(i, u"⬜")
             weather_tweet += emoji
@@ -79,8 +83,13 @@ class MeteoMap:
 
     def compile_temperature_tweet(self, timespan):
         temp_p20, temp_p40, temp_p60, temp_p80, temp_p100 = self.emojify_temperature()
-        temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (timespan,
-                                                   self.timestamp.strftime('%d. %b'))
+                
+        if timespan.startswith("-"):
+            temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (meteomap.timestamp.strftime('%d. %b'), 
+                                                       timespan[1:])
+        else:
+            temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (timespan,
+                                                       meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
             emoji = self.temperature.get(i, u"⬜")
             temperature_tweet += emoji
@@ -225,11 +234,9 @@ if __name__ == "__main__":
         t = Twitter(auth=OAuth(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, 
                             TWITTER_API_KEY, TWITTER_API_KEY_SECRET))
         
-        for weather_tweet in weather_tweets:
-            tweet = t.statuses.update(status = weather_tweet.encode('utf8'))
-        
-        for temperature_tweet in temperature_tweets:
-            tweet = t.statuses.update(status = temperature_tweet.encode('utf8'))
+        for i in range(0, len(weather_tweets)):
+            tweet = t.statuses.update(status = weather_tweets[i].encode('utf8'))
+            tweet = t.statuses.update(status = temperature_tweets[i].encode('utf8'))
             
             # tweet = t.statuses.update(status=temperature.encode('utf8'), in_reply_to_status_id = tweet["id_str"])
             # tweet = t.statuses.update(status=winddirection.encode('utf8'), in_reply_to_status_id = tweet["id_str"])
