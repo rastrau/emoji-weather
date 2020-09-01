@@ -76,7 +76,7 @@ class MeteoMap:
             weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ\n\n" % (timespan,
                                                                meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
-            emoji = self.weather.get(i, u"⬜")
+            emoji = self.weather.get(i, u"▫️")
             weather_tweet += emoji
             if i > 0 and i % 12 == 0:
                 weather_tweet += u"\n"
@@ -92,7 +92,7 @@ class MeteoMap:
             temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (timespan,
                                                        meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
-            emoji = self.temperature.get(i, u"⬜")
+            emoji = self.temperature.get(i, u"▫️")
             temperature_tweet += emoji
             if i > 0 and i % 12 == 0:
                 temperature_tweet += u"\n"
