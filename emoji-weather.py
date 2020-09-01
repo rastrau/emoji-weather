@@ -33,13 +33,14 @@ class MeteoMap:
         self.precipitation_probability[index] = MeteoDatum.precipitation_probability
         self.timestamp = MeteoDatum.timestamp
 
-    def set_basemap(self, emojimap):
+    def set_basemap(self, emojimap, lakes = True):
         emojimap[1] = u"🇫🇷"
         emojimap[12] = u"🇩🇪"
         emojimap[24] = u"🇦🇹"
         emojimap[84] = u"🇮🇹"
-        emojimap[10] = u"🔵"
-        emojimap[62] = u"🔵"
+        if lakes:
+            emojimap[10] = u"🔵"
+            emojimap[62] = u"🔵"
         return
 
     def emojify_weather(self):
@@ -63,16 +64,16 @@ class MeteoMap:
                 self.temperature[key] = config.quintiles[4]
             else:
                 self.temperature[key] = config.quintiles[5]
-        self.set_basemap(self.temperature)
+        self.set_basemap(self.temperature, lakes = False)
         return round(p20, 1), round(p40, 1), round(p60, 1), round(p80, 1), round(p100, 1)
 
     def compile_weather_tweet(self, timespan):
         self.emojify_weather()
         if timespan.startswith("-"):
-            weather_tweet = weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ Fᴏʀᴇᴄᴀsᴛ\n\n" % (meteomap.timestamp.strftime('%d. %b'),
+            weather_tweet = weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ\n\n" % (meteomap.timestamp.strftime('%d. %b'),
                                                                                timespan[1:])
         else:
-            weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ Fᴏʀᴇᴄᴀsᴛ\n\n" % (timespan,
+            weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ\n\n" % (timespan,
                                                                meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
             emoji = self.weather.get(i, u"⬜")
