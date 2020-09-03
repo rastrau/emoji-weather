@@ -22,7 +22,7 @@ class Config:
             "moderate rain": u"🌧️",
             "heavy intensity rain": u"💧",
             "very heavy rain": u"💧",
-            "extreme rain": u"💧",
+            "extreme rain": u"🐟",
             "heavy shower rain and drizzle": u"💧",
             "shower rain and drizzle": u"🌧️",
             "shower drizzle": u"🌧️",
