@@ -11,7 +11,7 @@ env:
   TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }} 
   TWITTER_API_KEY_SECRET: ${{ secrets.TWITTER_API_KEY_SECRET }}
   TARGET_TIMES_LOCAL: '15:00,20:00'
-  TARGET_TIMES_HUMAN: 'Afternoon,Evening' 
+  TARGET_TIMES_HUMAN: '-Afternoon,-Evening' 
 
 jobs:
   tweet-weather:

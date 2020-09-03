@@ -33,13 +33,14 @@ class MeteoMap:
         self.precipitation_probability[index] = MeteoDatum.precipitation_probability
         self.timestamp = MeteoDatum.timestamp
 
-    def set_basemap(self, emojimap):
+    def set_basemap(self, emojimap, lakes = True):
         emojimap[1] = u"🇫🇷"
         emojimap[12] = u"🇩🇪"
         emojimap[24] = u"🇦🇹"
         emojimap[84] = u"🇮🇹"
-        emojimap[10] = u"🔵"
-        emojimap[62] = u"🔵"
+        if lakes:
+            emojimap[10] = u"🔵"
+            emojimap[62] = u"🔵"
         return
 
     def emojify_weather(self):
@@ -63,15 +64,19 @@ class MeteoMap:
                 self.temperature[key] = config.quintiles[4]
             else:
                 self.temperature[key] = config.quintiles[5]
-        self.set_basemap(self.temperature)
+        self.set_basemap(self.temperature, lakes = False)
         return round(p20, 1), round(p40, 1), round(p60, 1), round(p80, 1), round(p100, 1)
 
     def compile_weather_tweet(self, timespan):
         self.emojify_weather()
-        weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ Fᴏʀᴇᴄᴀsᴛ\n\n" % (timespan,
-                                                          meteomap.timestamp.strftime('%d. %b'))
+        if timespan.startswith("-"):
+            weather_tweet = weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ\n\n" % (meteomap.timestamp.strftime('%d. %b'),
+                                                                               timespan[1:])
+        else:
+            weather_tweet = u"%s %s – Wᴇᴀᴛʜᴇʀ\n\n" % (timespan,
+                                                               meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
-            emoji = self.weather.get(i, u"⬜")
+            emoji = self.weather.get(i, u"▫️")
             weather_tweet += emoji
             if i > 0 and i % 12 == 0:
                 weather_tweet += u"\n"
@@ -79,10 +84,15 @@ class MeteoMap:
 
     def compile_temperature_tweet(self, timespan):
         temp_p20, temp_p40, temp_p60, temp_p80, temp_p100 = self.emojify_temperature()
-        temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (timespan,
-                                                   self.timestamp.strftime('%d. %b'))
+                
+        if timespan.startswith("-"):
+            temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (meteomap.timestamp.strftime('%d. %b'), 
+                                                       timespan[1:])
+        else:
+            temperature_tweet = u"%s %s – Tᴇᴍᴘ\n\n" % (timespan,
+                                                       meteomap.timestamp.strftime('%d. %b'))
         for i in range(1,85):
-            emoji = self.temperature.get(i, u"⬜")
+            emoji = self.temperature.get(i, u"▫️")
             temperature_tweet += emoji
             if i > 0 and i % 12 == 0:
                 temperature_tweet += u"\n"
@@ -225,11 +235,9 @@ if __name__ == "__main__":
         t = Twitter(auth=OAuth(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, 
                             TWITTER_API_KEY, TWITTER_API_KEY_SECRET))
         
-        for weather_tweet in weather_tweets:
-            tweet = t.statuses.update(status = weather_tweet.encode('utf8'))
-        
-        for temperature_tweet in temperature_tweets:
-            tweet = t.statuses.update(status = temperature_tweet.encode('utf8'))
+        for i in range(0, len(weather_tweets)):
+            tweet = t.statuses.update(status = weather_tweets[i].encode('utf8'))
+            tweet = t.statuses.update(status = temperature_tweets[i].encode('utf8'))
             
             # tweet = t.statuses.update(status=temperature.encode('utf8'), in_reply_to_status_id = tweet["id_str"])
             # tweet = t.statuses.update(status=winddirection.encode('utf8'), in_reply_to_status_id = tweet["id_str"])
