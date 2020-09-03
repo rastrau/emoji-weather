@@ -67,6 +67,45 @@ class MeteoMap:
         self.set_basemap(self.temperature, lakes = False)
         return round(p20, 1), round(p40, 1), round(p60, 1), round(p80, 1), round(p100, 1)
 
+    def emojify_winddirection(self):
+        for key, d in self.winddirection.iteritems():
+            if (d >= 337.5 and d <= 360) or (d >= 0 and d < 22.5):
+                self.winddirection[key] = config.winddirections["north"]
+            elif d >= 22.5 and d < 67.5:
+                self.winddirection[key] = config.winddirections["northeast"]
+            elif d >= 67.5 and d < 112.5:
+                self.winddirection[key] = config.winddirections["east"]
+            elif d >= 112.5 and d < 157.5:
+                self.winddirection[key] = config.winddirections["southeast"]
+            elif d >= 157.5 and d < 202.5:
+                self.winddirection[key] = config.winddirections["south"]
+            elif d >= 202.5 and d < 247.5:
+                self.winddirection[key] = config.winddirections["southwest"]
+            elif d >= 247.5 and d < 292.5:
+                self.winddirection[key] = config.winddirections["west"]
+            elif d >= 292.5 and d < 337.5:
+                self.winddirection[key] = config.winddirections["northwest"]
+            else:
+                self.winddirection[key] = config.winddirections["none"]
+        self.set_basemap(self.winddirection, lakes = False)
+        return
+
+    def emojify_windspeed(self):
+        windspeed = self.windspeed.values()
+        p25, p50, p75, p100 = quartile(windspeed)
+        
+        for key, w in self.windspeed.iteritems():
+            if w <= p25:
+                self.windspeed[key] = config.quartiles[1]
+            elif w <= p50:
+                self.windspeed[key] = config.quartiles[2]
+            elif w <= p75:
+                self.windspeed[key] = config.quartiles[3]
+            else:
+                self.windspeed[key] = config.quartiles[4]
+        self.set_basemap(self.windspeed)
+        return round(p25, 1), round(p50, 1), round(p75, 1), round(p100, 1)
+
     def compile_weather_tweet(self, timespan):
         self.emojify_weather()
         if timespan.startswith("-"):
@@ -97,14 +136,48 @@ class MeteoMap:
             if i > 0 and i % 12 == 0:
                 temperature_tweet += u"\n"
         temperature_tweet += u"\n"
-        temperature_tweet += u"°C\n"
-        temperature_tweet += u"🟥 %s–%s\n" % (temp_p80, temp_p100)
+        temperature_tweet += u"🟥 %s–%s °C\n" % (temp_p80, temp_p100)
         temperature_tweet += u"🟧 %s–%s\n" % (temp_p60, temp_p80)
         temperature_tweet += u"🟨 %s–%s\n" % (temp_p40, temp_p60)
         temperature_tweet += u"🟩 %s–%s\n" % (temp_p20, temp_p40)
         temperature_tweet += u"🟦 <%s\n" % temp_p20
         return temperature_tweet
 
+    def compile_winddirection_tweet(self, timespan):
+        self.emojify_winddirection()
+        if timespan.startswith("-"):
+            winddirection_tweet = u"%s %s – Wɪɴᴅ Dɪʀᴇᴄᴛɪᴏɴ\n\n" % (meteomap.timestamp.strftime('%d. %b'),
+                                                                  timespan[1:])
+        else:
+            winddirection_tweet = u"%s %s – Wɪɴᴅ Dɪʀᴇᴄᴛɪᴏɴ\n\n" % (timespan,
+                                                                  meteomap.timestamp.strftime('%d. %b'))
+        for i in range(1,85):
+            emoji = self.winddirection.get(i, u"▫️")
+            winddirection_tweet += emoji
+            if i > 0 and i % 12 == 0:
+                winddirection_tweet += u"\n"            
+        return winddirection_tweet
+
+    def compile_windspeed_tweet(self, timespan):
+        windspeed_p25, windspeed_p50, windspeed_p75, windspeed_p100 = self.emojify_windspeed()
+
+        if timespan.startswith("-"):
+            windspeed_tweet = u"%s %s – Wɪɴᴅ Sᴘᴇᴇᴅ\n\n" % (meteomap.timestamp.strftime('%d. %b'),
+                                                          timespan[1:])
+        else:
+            windspeed_tweet = u"%s %s – Wɪɴᴅ Sᴘᴇᴇᴅ\n\n" % (timespan,
+                                                          meteomap.timestamp.strftime('%d. %b'))
+        for i in range(1,85):
+            emoji = self.windspeed.get(i, u"▫️")
+            windspeed_tweet += emoji
+            if i > 0 and i % 12 == 0:
+                windspeed_tweet += u"\n"
+        windspeed_tweet += u"\n"
+        windspeed_tweet += u"⬛ %s–%s m/s\n" % (windspeed_p75, windspeed_p100)
+        windspeed_tweet += u"◼️ %s–%s\n" % (windspeed_p50, windspeed_p75)
+        windspeed_tweet += u"◾ %s–%s\n" % (windspeed_p25, windspeed_p50)
+        windspeed_tweet += u"▪️ <%s\n" % windspeed_p25
+        return windspeed_tweet
 
 
 class MeteoDatum:
@@ -133,6 +206,10 @@ def get_swiss_datetime(timestamp):
 def quintile(data):
     return np.percentile(data, 20), np.percentile(data, 40), np.percentile(data, 60), \
         np.percentile(data, 80), np.percentile(data, 100)
+
+def quartile(data):
+    return np.percentile(data, 25), np.percentile(data, 50), np.percentile(data, 75), \
+        np.percentile(data, 100)
 
 def kelvin_to_celsius(temperature):
     return temperature - 273.15
@@ -188,6 +265,10 @@ if __name__ == "__main__":
         TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('TWITTER_ACCESS_TOKEN_SECRET')
         TWITTER_API_KEY = os.environ.get('TWITTER_API_KEY')
         TWITTER_API_KEY_SECRET = os.environ.get('TWITTER_API_KEY_SECRET')
+        WIND_TWITTER_ACCESS_TOKEN = os.environ.get('WIND_TWITTER_ACCESS_TOKEN')
+        WIND_TWITTER_ACCESS_TOKEN_SECRET = os.environ.get('WIND_TWITTER_ACCESS_TOKEN_SECRET')
+        WIND_TWITTER_API_KEY = os.environ.get('WIND_TWITTER_API_KEY')
+        WIND_TWITTER_API_KEY_SECRET = os.environ.get('WIND_TWITTER_API_KEY_SECRET')
         TARGET_TIMES_LOCAL = os.environ.get('TARGET_TIMES_LOCAL')
         TARGET_TIMES_HUMAN = os.environ.get('TARGET_TIMES_HUMAN')
     else:
@@ -202,6 +283,8 @@ if __name__ == "__main__":
     
     weather_tweets = []
     temperature_tweets = []
+    winddirection_tweets = []
+    windspeed_tweets = []
 
     for j in range(0, len(TARGET_TIMES_LOCAL)):
         meteomap = MeteoMap()
@@ -221,7 +304,10 @@ if __name__ == "__main__":
         weather_tweets.append(meteomap.compile_weather_tweet(TARGET_TIMES_HUMAN[j]))
         print "Compiling temperature tweet(s)..."
         temperature_tweets.append(meteomap.compile_temperature_tweet(TARGET_TIMES_HUMAN[j]))
-
+        print "Compiling wind-direction tweet(s)..."
+        winddirection_tweets.append(meteomap.compile_winddirection_tweet(TARGET_TIMES_HUMAN[j]))
+        print "Compiling wind-speed tweet(s)..."
+        windspeed_tweets.append(meteomap.compile_windspeed_tweet(TARGET_TIMES_HUMAN[j]))
 
     if testing:
         with codecs.open("tweets.txt", "w", "utf8") as f:
@@ -231,14 +317,24 @@ if __name__ == "__main__":
             for temperature_tweet in temperature_tweets:
                 f.write(temperature_tweet)
                 f.write("--------------------------------------------\n")                
+            for winddirection_tweet in winddirection_tweets:
+                f.write(winddirection_tweet)
+                f.write("--------------------------------------------\n")                
+            for windspeed_tweet in windspeed_tweets:
+                f.write(windspeed_tweet)
+                f.write("--------------------------------------------\n")                
     else:
         t = Twitter(auth=OAuth(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, 
                             TWITTER_API_KEY, TWITTER_API_KEY_SECRET))
         
-        for i in range(0, len(weather_tweets)):
-            tweet = t.statuses.update(status = weather_tweets[i].encode('utf8'))
-            tweet = t.statuses.update(status = temperature_tweets[i].encode('utf8'))
-            
-            # tweet = t.statuses.update(status=temperature.encode('utf8'), in_reply_to_status_id = tweet["id_str"])
-            # tweet = t.statuses.update(status=winddirection.encode('utf8'), in_reply_to_status_id = tweet["id_str"])
+        t_wind = Twitter(auth=OAuth(WIND_TWITTER_ACCESS_TOKEN, 
+                                    WIND_TWITTER_ACCESS_TOKEN_SECRET, 
+                                    WIND_TWITTER_API_KEY, 
+                                    WIND_TWITTER_API_KEY_SECRET))
 
+        for i in range(0, len(weather_tweets)):
+            t.statuses.update(status = weather_tweets[i].encode('utf8'))
+            t.statuses.update(status = temperature_tweets[i].encode('utf8'))
+
+            t_wind.statuses.update(status = winddirection_tweets[i].encode('utf8'))
+            t_wind.statuses.update(status = windspeed_tweets[i].encode('utf8'))
