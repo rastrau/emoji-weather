@@ -326,15 +326,15 @@ if __name__ == "__main__":
     else:
         t = Twitter(auth=OAuth(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, 
                             TWITTER_API_KEY, TWITTER_API_KEY_SECRET))
-        
+        """
         t_wind = Twitter(auth=OAuth(WIND_TWITTER_ACCESS_TOKEN, 
                                     WIND_TWITTER_ACCESS_TOKEN_SECRET, 
                                     WIND_TWITTER_API_KEY, 
-                                    WIND_TWITTER_API_KEY_SECRET))
+                                    WIND_TWITTER_API_KEY_SECRET))"""
 
         for i in range(0, len(weather_tweets)):
             t.statuses.update(status = weather_tweets[i].encode('utf8'))
             t.statuses.update(status = temperature_tweets[i].encode('utf8'))
 
-            t_wind.statuses.update(status = winddirection_tweets[i].encode('utf8'))
-            t_wind.statuses.update(status = windspeed_tweets[i].encode('utf8'))
+            """t_wind.statuses.update(status = winddirection_tweets[i].encode('utf8'))
+            t_wind.statuses.update(status = windspeed_tweets[i].encode('utf8'))"""
