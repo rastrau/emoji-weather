@@ -324,17 +324,22 @@ if __name__ == "__main__":
                 f.write(windspeed_tweet)
                 f.write("--------------------------------------------\n")                
     else:
+        print "Instantiating Twitter..."
         t = Twitter(auth=OAuth(TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET, 
                             TWITTER_API_KEY, TWITTER_API_KEY_SECRET))
-        """
+        time.sleep(5)
+        print "Instantiating Twitter..."
         t_wind = Twitter(auth=OAuth(WIND_TWITTER_ACCESS_TOKEN, 
                                     WIND_TWITTER_ACCESS_TOKEN_SECRET, 
                                     WIND_TWITTER_API_KEY, 
-                                    WIND_TWITTER_API_KEY_SECRET))"""
-
+                                    WIND_TWITTER_API_KEY_SECRET))
+        
         for i in range(0, len(weather_tweets)):
+            print "Tweeting weather..."
             t.statuses.update(status = weather_tweets[i].encode('utf8'))
+            print "Tweeting temperature..."
             t.statuses.update(status = temperature_tweets[i].encode('utf8'))
-
-            """t_wind.statuses.update(status = winddirection_tweets[i].encode('utf8'))
-            t_wind.statuses.update(status = windspeed_tweets[i].encode('utf8'))"""
+            print "Tweeting wind direction..."
+            t_wind.statuses.update(status = winddirection_tweets[i].encode('utf8'))
+            print "Tweeting wind speed..."
+            t_wind.statuses.update(status = windspeed_tweets[i].encode('utf8'))
