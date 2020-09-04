@@ -1,9 +1,12 @@
 # emoji-weather
 
 ## About
-A [Twitter bot](https://twitter.com/tweteoswiss) by that tweets weather and temperature forecasts for Switzerland using emojis. Tweets are sent in the morning (6:30 local time), at noon (11:45), and in the afternoon (15:30) for morning and afternoon, afternoon and evening, and evening only, respectively. 
+A [Twitter bot](https://twitter.com/tweteoswiss) by that tweets weather and temperature forecasts for Switzerland using emojis. Tweets are sent according to the following schedule:
+- **in the morning (6:30 local time)**: forecasts for the morning and the afternoon
+- **at noon (11:45)**: forecasts for the afternoon and the evening
+- **in the afternoon (15:30)**: forecast for the evening only 
 
-**Follow [@tweteoswiss](https://twitter.com/tweteoswiss) for receiving forecasts.**
+**Follow [@tweteoswiss](https://twitter.com/tweteoswiss) for receiving these forecasts.**
 
 ---
 ![Preview](https://raw.githubusercontent.com/rastrau/emoji-weather/master/assets/preview.png)
