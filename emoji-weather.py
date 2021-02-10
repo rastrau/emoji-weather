@@ -141,6 +141,14 @@ class MeteoMap:
         temperature_tweet += u"🟨 %s–%s\n" % (temp_p40, temp_p60)
         temperature_tweet += u"🟩 %s–%s\n" % (temp_p20, temp_p40)
         temperature_tweet += u"🟦 <%s\n" % temp_p20
+        
+        # Emphasise very cold and very hot temperatures        
+        if temp_p20 < -5:
+            temperature_tweet = temperature_tweet.replace(u"🟦", u"🥶")
+            
+        if temp_p80 > 30:
+            temperature_tweet = temperature_tweet.replace(u"🟥", u"🥵")
+            
         return temperature_tweet
 
     def compile_winddirection_tweet(self, timespan):
