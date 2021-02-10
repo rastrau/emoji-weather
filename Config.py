@@ -21,7 +21,7 @@ class Config:
             "heavy intensity drizzle rain": u"🌧️",
             "moderate rain": u"🌧️",
             "heavy intensity rain": u"💧",
-            "very heavy rain": u"💧",
+            "very heavy rain": u"🐟",
             "extreme rain": u"🐟",
             "heavy shower rain and drizzle": u"💧",
             "shower rain and drizzle": u"🌧️",
