@@ -155,7 +155,7 @@ class MeteoMap:
         temperature_tweet = temperature_tweet.replace(u"🟨", u"🟩")
         temperature_tweet = temperature_tweet.replace(u"🟧", u"🟨")
         temperature_tweet = temperature_tweet.replace(u"🟥", u"🟧")
-        return tweet_text
+        return temperature_tweet
 
     def _warmify_emoji_temperature(self, temperature_tweet):
         temperature_tweet = temperature_tweet.replace(u"🟥", u"🥵")
