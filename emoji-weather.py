@@ -66,7 +66,7 @@ class MeteoMap:
                 self.temperature[key] = config.quintiles[5]
         self.set_basemap(self.temperature, lakes = False)
         return round(p20, 1), round(p40, 1), round(p60, 1), round(p80, 1), round(p100, 1)
-
+    
     def emojify_winddirection(self):
         for key, d in self.winddirection.iteritems():
             if (d >= 337.5 and d <= 360) or (d >= 0 and d < 22.5):
@@ -142,13 +142,27 @@ class MeteoMap:
         temperature_tweet += u"🟩 %s–%s\n" % (temp_p20, temp_p40)
         temperature_tweet += u"🟦 <%s\n" % temp_p20
         
-        # Emphasise very cold and very hot temperatures        
+        # Emphasise very cold and very hot temperature situations        
         if temp_p20 < -5:
-            temperature_tweet = temperature_tweet.replace(u"🟦", u"🥶")
-            
+            temperature_tweet = self._coldify_emoji_temperature(temperature_tweet)
         if temp_p80 > 30:
-            temperature_tweet = temperature_tweet.replace(u"🟥", u"🥵")
-            
+            temperature_tweet = self._warmify_emoji_temperature(temperature_tweet)
+        return temperature_tweet
+
+    def _coldify_emoji_temperature(self, temperature_tweet):
+        temperature_tweet = temperature_tweet.replace(u"🟦", u"🥶")
+        temperature_tweet = temperature_tweet.replace(u"🟩", u"🟦")
+        temperature_tweet = temperature_tweet.replace(u"🟨", u"🟩")
+        temperature_tweet = temperature_tweet.replace(u"🟧", u"🟨")
+        temperature_tweet = temperature_tweet.replace(u"🟥", u"🟧")
+        return tweet_text
+
+    def _warmify_emoji_temperature(self, temperature_tweet):
+        temperature_tweet = temperature_tweet.replace(u"🟥", u"🥵")
+        temperature_tweet = temperature_tweet.replace(u"🟧", u"🟥")
+        temperature_tweet = temperature_tweet.replace(u"🟨", u"🟧")
+        temperature_tweet = temperature_tweet.replace(u"🟩", u"🟨")
+        temperature_tweet = temperature_tweet.replace(u"🟦", u"🟩")
         return temperature_tweet
 
     def compile_winddirection_tweet(self, timespan):
