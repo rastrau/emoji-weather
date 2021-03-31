@@ -2,7 +2,7 @@ name: Weather map, afternoon
 
 on:
   schedule:
-  - cron:  '30 14 * * *'
+  - cron:  '30 13 * * *'
 
 env:
   OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
