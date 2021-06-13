@@ -145,7 +145,7 @@ class MeteoMap:
         # Emphasise very cold and very hot temperature situations        
         if temp_p20 < -5:
             temperature_tweet = self._coldify_emoji_temperature(temperature_tweet)
-        if temp_p80 > 30:
+        if temp_p80 > 26:
             temperature_tweet = self._warmify_emoji_temperature(temperature_tweet)
         return temperature_tweet
 
