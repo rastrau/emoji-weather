@@ -3,7 +3,9 @@ name: Weather map, noon
 on:
   schedule:
   - cron:  '45 8 * * *'
-
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
 env:
   OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
   TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }} 
