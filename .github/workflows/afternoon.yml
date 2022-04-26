@@ -2,7 +2,7 @@ name: Weather map, afternoon
 
 on:
   schedule:
-  - cron:  '30 11 * * *'
+  - cron:  '30 12 * * *'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   
