@@ -41,3 +41,12 @@ jobs:
     
     - name: Run Python script
       run: python emoji-weather.py
+      
+    - name: Push 'keep-alive' file to repo
+      uses: github-actions-x/commit@v2.9
+      with:
+        push-branch: 'main'
+        commit-message: 'Sent weather forecast'
+        force-add: 'true'
+        files: last-run.txt
+        name: autoupdate
