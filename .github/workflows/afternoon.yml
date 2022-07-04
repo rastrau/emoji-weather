@@ -1,4 +1,4 @@
-name: Weather map, afternoon
+name: Afternoon Weather
 
 on:
   schedule:
