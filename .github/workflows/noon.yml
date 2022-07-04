@@ -1,4 +1,4 @@
-name: Weather map, noon
+name: Noon Weather
 
 on:
   schedule:
