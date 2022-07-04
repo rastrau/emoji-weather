@@ -267,11 +267,12 @@ def parse_meteodata(json_data, target_time_local):
     temperature = item["main"]["temp"]
     humidity = item["main"]["humidity"]
     clouds = item["clouds"]["all"]
-    windspeed = item["wind"]["speed"]
-    winddirection = item["wind"]["deg"]
+    wind_speed = item["wind"]["speed"]
+    wind_direction = item["wind"]["deg"]
     precipitation_probability = item["pop"]
     timestamp = item["dt_txt"]
-    return MeteoDatum(weather, temperature, humidity, clouds, windspeed, winddirection, precipitation_probability, timestamp)
+    return MeteoDatum(weather, temperature, humidity, clouds, wind_speed, 
+                      wind_direction, precipitation_probability, timestamp)
 
 
 
@@ -365,3 +366,9 @@ if __name__ == "__main__":
             t_wind.statuses.update(status = winddirection_tweets[i].encode('utf8'))
             print "Tweeting wind speed..."
             t_wind.statuses.update(status = windspeed_tweets[i].encode('utf8'))
+
+    with open('last-run.txt','w') as f:
+        utc_datetime = pytz.utc.localize(datetime.datetime.utcnow())
+        swiss_datetime = utc_datetime.astimezone(
+            pytz.timezone("Europe/Zurich"))
+        f.write(str(swiss_datetime))        
