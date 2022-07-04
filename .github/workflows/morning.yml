@@ -1,4 +1,4 @@
-name: Weather map, morning
+name: Morning Weather
 
 on:
   schedule:
