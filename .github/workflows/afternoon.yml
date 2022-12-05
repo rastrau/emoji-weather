@@ -29,10 +29,10 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v2
     
-    - name: Set up Python 2.7
+    - name: Set up Python 2.7.18
       uses: actions/setup-python@v2
       with:
-        python-version: 2.7
+        python-version: 2.7.18
     
     - name: Install Python dependencies
       run: |
