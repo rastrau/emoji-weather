@@ -1,4 +1,4 @@
-name: Noon Weather
+name: Toot Noon Weather
 
 on:
   schedule:
@@ -8,19 +8,13 @@ on:
   
 env:
   OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
-  TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }} 
-  TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }} 
-  TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }} 
-  TWITTER_API_KEY_SECRET: ${{ secrets.TWITTER_API_KEY_SECRET }}
-  WIND_TWITTER_ACCESS_TOKEN: ${{ secrets.WIND_TWITTER_ACCESS_TOKEN }} 
-  WIND_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.WIND_TWITTER_ACCESS_TOKEN_SECRET }} 
-  WIND_TWITTER_API_KEY: ${{ secrets.WIND_TWITTER_API_KEY }} 
-  WIND_TWITTER_API_KEY_SECRET: ${{ secrets.WIND_TWITTER_API_KEY_SECRET }}
+  MASTODON_TOKEN_WEATHER: ${{ secrets.MASTODON_TOKEN_WEATHER }}
+  MASTODON_TOKEN_WIND: ${{ secrets.MASTODON_TOKEN_WIND }}
   TARGET_TIMES_LOCAL: '15:00'
   TARGET_TIMES_HUMAN: '-Afternoon' 
 
 jobs:
-  tweet-weather:
+  toot-weather:
 
     runs-on: ubuntu-latest
 
@@ -29,10 +23,10 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v3
     
-    - name: Set up Python 2.7.18
+    - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
-        python-version: 2.7.18
+        python-version: 3.9
     
     - name: Install Python dependencies
       run: |
@@ -40,7 +34,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
     - name: Run Python script
-      run: python emoji-weather.py
+      run: python emoji-weather-mastodon.py
       
     - name: Push 'keep-alive' file to repo
       uses: github-actions-x/commit@v2.9
