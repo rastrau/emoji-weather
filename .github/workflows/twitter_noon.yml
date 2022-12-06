@@ -1,0 +1,52 @@
+name: Noon Weather
+
+on:
+  schedule:
+  - cron:  '45 8 * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+env:
+  OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
+  TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }} 
+  TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }} 
+  TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }} 
+  TWITTER_API_KEY_SECRET: ${{ secrets.TWITTER_API_KEY_SECRET }}
+  WIND_TWITTER_ACCESS_TOKEN: ${{ secrets.WIND_TWITTER_ACCESS_TOKEN }} 
+  WIND_TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.WIND_TWITTER_ACCESS_TOKEN_SECRET }} 
+  WIND_TWITTER_API_KEY: ${{ secrets.WIND_TWITTER_API_KEY }} 
+  WIND_TWITTER_API_KEY_SECRET: ${{ secrets.WIND_TWITTER_API_KEY_SECRET }}
+  TARGET_TIMES_LOCAL: '15:00'
+  TARGET_TIMES_HUMAN: '-Afternoon' 
+
+jobs:
+  tweet-weather:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python 2.7.18
+      uses: actions/setup-python@v4
+      with:
+        python-version: 2.7.18
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    
+    - name: Run Python script
+      run: python emoji-weather.py
+      
+    - name: Push 'keep-alive' file to repo
+      uses: github-actions-x/commit@v2.9
+      with:
+        push-branch: 'main'
+        commit-message: 'Sent weather forecast'
+        force-add: 'true'
+        files: last-run.txt
+        name: autoupdate
