@@ -1,4 +1,4 @@
-name: Morning Weather
+name: Tweet Morning Weather
 
 on:
   schedule:
