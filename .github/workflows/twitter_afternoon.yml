@@ -1,4 +1,4 @@
-name: Afternoon Weather
+name: Tweet Afternoon Weather
 
 on:
   schedule:
