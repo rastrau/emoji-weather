@@ -13,3 +13,4 @@ tweets.txt
 *.spx
 analysis/geodata.gdb/gdb
 analysis/geodata.gdb/timestamps
+__pycache__/Config.cpython-39.pyc
