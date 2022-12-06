@@ -295,10 +295,6 @@ if __name__ == "__main__":
         OPENWEATHERMAP_API_KEY = "" # redacted
         TARGET_TIMES_LOCAL = "09:00,15:00,20:00"
         TARGET_TIMES_HUMAN = "Morning,Afternoon,Evening"
-        MASTODON_DARK_TOKEN_WEATHER = "" # redacted
-        MASTODON_DARK_TOKEN_WIND = "" # redacted
-        MASTODON_LIGHT_TOKEN_WEATHER = "" # redacted
-        MASTODON_LIGHT_TOKEN_WIND = "" # redacted
     
     TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
     TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
