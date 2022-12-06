@@ -272,21 +272,33 @@ def parse_meteodata(json_data, target_time_local):
     return MeteoDatum(weather, temperature, humidity, clouds, wind_speed, 
                       wind_direction, precipitation_probability, timestamp)
 
-
+def switch_light_to_dark_mode(text):
+    text = text.replace(u"▫️", u"🔄")
+    text = text.replace(u"▪️", u"▫️")
+    text = text.replace(u"◾", u"◽")
+    text = text.replace(u"◼️", u"◻️")
+    text = text.replace(u"⬛", u"⬜")
+    text = text.replace(u"🔄", u"▪️")
+    return text
+    
 if __name__ == "__main__":
     testing = False
     if not testing:    
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
         TARGET_TIMES_LOCAL = os.environ.get("TARGET_TIMES_LOCAL")
         TARGET_TIMES_HUMAN = os.environ.get("TARGET_TIMES_HUMAN")
-        MASTODON_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_WEATHER")
-        MASTODON_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_WIND")
+        MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_WEATHER")
+        MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_WIND")
+        MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_LIGHT_TOKEN_WEATHER")
+        MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_LIGHT_TOKEN_WIND")
     else:
         OPENWEATHERMAP_API_KEY = "" # redacted
         TARGET_TIMES_LOCAL = "09:00,15:00,20:00"
         TARGET_TIMES_HUMAN = "Morning,Afternoon,Evening"
-        MASTODON_TOKEN_WEATHER = "" # redacted
-        MASTODON_TOKEN_WIND = "" # redacted
+        MASTODON_DARK_TOKEN_WEATHER = "" # redacted
+        MASTODON_DARK_TOKEN_WIND = "" # redacted
+        MASTODON_LIGHT_TOKEN_WEATHER = "" # redacted
+        MASTODON_LIGHT_TOKEN_WIND = "" # redacted
     
     TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
     TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
@@ -295,10 +307,14 @@ if __name__ == "__main__":
     OPENWEATHERMAP_URL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=%s" % OPENWEATHERMAP_API_KEY
     MASTODON_URL = "https://tooting.ch/api/v1/statuses"
     
-    weather_texts = []
-    temperature_texts = []
-    winddirection_texts = []
-    windspeed_texts = []
+    weather_texts_light = []
+    temperature_texts_light = []
+    winddirection_texts_light = []
+    windspeed_texts_light = []
+    weather_texts_dark = []
+    temperature_texts_dark = []
+    winddirection_texts_dark = []
+    windspeed_texts_dark = []
 
     for j in range(0, len(TARGET_TIMES_LOCAL)):
         meteomap = MeteoMap()
@@ -315,50 +331,97 @@ if __name__ == "__main__":
                 meteomap.add_datum(i, meteodatum)
         
         print("\nCompiling weather toot(s)...")
-        weather_texts.append(meteomap.compile_weather_text(TARGET_TIMES_HUMAN[j]))
+        weather_toot_light = meteomap.compile_weather_text(TARGET_TIMES_HUMAN[j])
+        weather_texts_light.append(weather_toot_light)
+        weather_texts_dark.append(switch_light_to_dark_mode(weather_toot_light))
+        
         print("Compiling temperature toot(s)...")
-        temperature_texts.append(meteomap.compile_temperature_text(TARGET_TIMES_HUMAN[j]))
+        temperature_toot_light = meteomap.compile_temperature_text(TARGET_TIMES_HUMAN[j])
+        temperature_texts_light.append(temperature_toot_light)
+        temperature_texts_dark.append(switch_light_to_dark_mode(temperature_toot_light))
+        
         print("Compiling wind-direction toot(s)...")
-        winddirection_texts.append(meteomap.compile_winddirection_text(TARGET_TIMES_HUMAN[j]))
+        winddirection_toot_light = meteomap.compile_winddirection_text(TARGET_TIMES_HUMAN[j])
+        winddirection_texts_light.append(winddirection_toot_light)
+        winddirection_texts_dark.append(switch_light_to_dark_mode(winddirection_toot_light))
+        
         print("Compiling wind-speed toot(s)...")
-        windspeed_texts.append(meteomap.compile_windspeed_text(TARGET_TIMES_HUMAN[j]))
+        windspeed_toot_light = meteomap.compile_windspeed_text(TARGET_TIMES_HUMAN[j])
+        windspeed_texts_light.append(windspeed_toot_light)
+        windspeed_texts_dark.append(switch_light_to_dark_mode(windspeed_toot_light))
 
     if testing:
         with codecs.open("toots.txt", "w", "utf8") as f:
-            for weather_tweet in weather_texts:
+            f.write("LIGHT MODE:")
+            f.write("--------------------------------------------\n")
+            for weather_tweet in weather_texts_light:
                 f.write(weather_tweet)
                 f.write("--------------------------------------------\n")
-            for temperature_tweet in temperature_texts:
+            for temperature_tweet in temperature_texts_light:
                 f.write(temperature_tweet)
                 f.write("--------------------------------------------\n")                
-            for winddirection_tweet in winddirection_texts:
+            for winddirection_tweet in winddirection_texts_light:
                 f.write(winddirection_tweet)
                 f.write("--------------------------------------------\n")                
-            for windspeed_tweet in windspeed_texts:
+            for windspeed_tweet in windspeed_texts_light:
                 f.write(windspeed_tweet)
+                f.write("--------------------------------------------\n")         
+            f.write("DARK MODE:")
+            f.write("--------------------------------------------\n")
+            for weather_tweet in weather_texts_dark:
+                f.write(weather_tweet)
+                f.write("--------------------------------------------\n")
+            for temperature_tweet in temperature_texts_dark:
+                f.write(temperature_tweet)
                 f.write("--------------------------------------------\n")                
+            for winddirection_tweet in winddirection_texts_dark:
+                f.write(winddirection_tweet)
+                f.write("--------------------------------------------\n")                
+            for windspeed_tweet in windspeed_texts_dark:
+                f.write(windspeed_tweet)
+                f.write("--------------------------------------------\n")         
+                   
     else:
-        for i in range(0, len(weather_texts)):
+        for i in range(0, len(weather_texts_light)):
             print("Tooting weather...")
             r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_TOKEN_WEATHER)},
-                              data={ "status": weather_texts[i].encode("utf8")}, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
+                              data={ "status": weather_texts_light[i].encode("utf8")}, 
                               verify=certifi.where())
+            r = requests.post(MASTODON_URL, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WEATHER)},
+                              data={ "status": weather_texts_dark[i].encode("utf8")}, 
+                              verify=certifi.where())
+            
             print("Tooting temperature...")
             r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_TOKEN_WEATHER)},
-                              data={ "status": temperature_texts[i].encode("utf8")}, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
+                              data={ "status": temperature_texts_light[i].encode("utf8")}, 
                               verify=certifi.where())
+            r = requests.post(MASTODON_URL, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WEATHER)},
+                              data={ "status": temperature_texts_dark[i].encode("utf8")}, 
+                              verify=certifi.where())
+            
             print("Tooting wind direction...")
             r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_TOKEN_WIND)},
-                              data={ "status": winddirection_texts[i].encode("utf8")}, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WIND)},
+                              data={ "status": winddirection_texts_light[i].encode("utf8")}, 
                               verify=certifi.where())
+            r = requests.post(MASTODON_URL, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WIND)},
+                              data={ "status": winddirection_texts_dark[i].encode("utf8")}, 
+                              verify=certifi.where())
+            
             print("Tooting wind speed...")
             r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_TOKEN_WIND)},
-                              data={ "status": windspeed_texts[i].encode("utf8")}, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WIND)},
+                              data={ "status": windspeed_texts_light[i].encode("utf8")}, 
                               verify=certifi.where())
+            r = requests.post(MASTODON_URL, 
+                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WIND)},
+                              data={ "status": windspeed_texts_dark[i].encode("utf8")}, 
+                              verify=certifi.where())            
 
     with open("last-run.txt", "w") as f:
         utc_datetime = pytz.utc.localize(datetime.datetime.utcnow())
