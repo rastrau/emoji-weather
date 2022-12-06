@@ -1,4 +1,4 @@
-name: Noon Weather
+name: Tweet Noon Weather
 
 on:
   schedule:
