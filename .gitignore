@@ -1,16 +1,3 @@
-
-emoji-weather-full.py
 secrets.txt
-test.txt
-assets/scheduling.xlsx
 Config.pyc
-tweets.txt
-*.mxd
-*.gdbtable
-*.gdbtablx
-*.atx
-*.gdbindexes
-*.spx
-analysis/geodata.gdb/gdb
-analysis/geodata.gdb/timestamps
 __pycache__/Config.cpython-39.pyc
