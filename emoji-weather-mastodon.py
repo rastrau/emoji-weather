@@ -282,20 +282,41 @@ def switch_light_to_dark_mode(text):
     return text
     
 if __name__ == "__main__":
-    testing = False
-    if not testing:    
-        OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
+   
+    run_mode = os.environ.get("RUN_MODE")
+    # run_mode can be:
+    # - "operational" → for running the bots operationally using GitHub Actions
+    # - "remote testing" → for test-running using GitHub Actions and tooting through @meteo_test_45618761@tooting.ch
+    # - "local" → for test-running on the local machine (needs 'secrets.txt') and tooting through @meteo_test_45618761@tooting.ch as well as saving the toots to disk
+    
+    if run_mode == "operational":    
         TARGET_TIMES_LOCAL = os.environ.get("TARGET_TIMES_LOCAL")
         TARGET_TIMES_HUMAN = os.environ.get("TARGET_TIMES_HUMAN")
+        OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
         MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_WEATHER")
         MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_WIND")
         MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_LIGHT_TOKEN_WEATHER")
         MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_LIGHT_TOKEN_WIND")
+    elif run_mode == "remote testing":
+        TARGET_TIMES_LOCAL = "09:00"
+        TARGET_TIMES_HUMAN = "Morning"
+        OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
+        MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
+        MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
+        MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
+        MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
     else:
-        OPENWEATHERMAP_API_KEY = "" # redacted
-        TARGET_TIMES_LOCAL = "09:00,15:00,20:00"
-        TARGET_TIMES_HUMAN = "Morning,Afternoon,Evening"
-    
+        run_mode = "local testing"
+        TARGET_TIMES_LOCAL = "20:00" # can be, e.g. "09:00,15:00,20:00"
+        TARGET_TIMES_HUMAN = "Evening" # can be, e.g. "Morning,Afternoon,Evening"
+        with open("secrets.txt", "r") as in_file:
+            parameters = in_file.readlines()
+        OPENWEATHERMAP_API_KEY = parameters[0].strip()
+        MASTODON_DARK_TOKEN_WEATHER = parameters[1].strip()
+        MASTODON_DARK_TOKEN_WIND = parameters[1].strip()
+        MASTODON_LIGHT_TOKEN_WEATHER = parameters[1].strip()
+        MASTODON_LIGHT_TOKEN_WIND = parameters[1].strip()
+        
     TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
     TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
     
@@ -346,7 +367,7 @@ if __name__ == "__main__":
         windspeed_texts_light.append(windspeed_toot_light)
         windspeed_texts_dark.append(switch_light_to_dark_mode(windspeed_toot_light))
 
-    if testing:
+    if run_mode == "local testing":
         with codecs.open("toots.txt", "w", "utf8") as f:
             f.write("LIGHT MODE:")
             f.write("--------------------------------------------\n")
@@ -377,50 +398,50 @@ if __name__ == "__main__":
                 f.write(windspeed_tweet)
                 f.write("--------------------------------------------\n")         
                    
-    else:
-        for i in range(0, len(weather_texts_light)):
-            print("Tooting weather...")
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
-                              data={ "status": weather_texts_light[i].encode("utf8")}, 
-                              verify=certifi.where())
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WEATHER)},
-                              data={ "status": weather_texts_dark[i].encode("utf8")}, 
-                              verify=certifi.where())
-            
-            print("Tooting temperature...")
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
-                              data={ "status": temperature_texts_light[i].encode("utf8")}, 
-                              verify=certifi.where())
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WEATHER)},
-                              data={ "status": temperature_texts_dark[i].encode("utf8")}, 
-                              verify=certifi.where())
-            
-            print("Tooting wind direction...")
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WIND)},
-                              data={ "status": winddirection_texts_light[i].encode("utf8")}, 
-                              verify=certifi.where())
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WIND)},
-                              data={ "status": winddirection_texts_dark[i].encode("utf8")}, 
-                              verify=certifi.where())
-            
-            print("Tooting wind speed...")
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WIND)},
-                              data={ "status": windspeed_texts_light[i].encode("utf8")}, 
-                              verify=certifi.where())
-            r = requests.post(MASTODON_URL, 
-                              headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WIND)},
-                              data={ "status": windspeed_texts_dark[i].encode("utf8")}, 
-                              verify=certifi.where())            
+    for i in range(0, len(weather_texts_light)):
+        print("Tooting weather...")
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
+                            data={ "status": weather_texts_light[i].encode("utf8")}, 
+                            verify=certifi.where())
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WEATHER)},
+                            data={ "status": weather_texts_dark[i].encode("utf8")}, 
+                            verify=certifi.where())
+        
+        print("Tooting temperature...")
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
+                            data={ "status": temperature_texts_light[i].encode("utf8")}, 
+                            verify=certifi.where())
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WEATHER)},
+                            data={ "status": temperature_texts_dark[i].encode("utf8")}, 
+                            verify=certifi.where())
+        
+        print("Tooting wind direction...")
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WIND)},
+                            data={ "status": winddirection_texts_light[i].encode("utf8")}, 
+                            verify=certifi.where())
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WIND)},
+                            data={ "status": winddirection_texts_dark[i].encode("utf8")}, 
+                            verify=certifi.where())
+        
+        print("Tooting wind speed...")
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WIND)},
+                            data={ "status": windspeed_texts_light[i].encode("utf8")}, 
+                            verify=certifi.where())
+        r = requests.post(MASTODON_URL, 
+                            headers={"Authorization": "Bearer %s" % (MASTODON_DARK_TOKEN_WIND)},
+                            data={ "status": windspeed_texts_dark[i].encode("utf8")}, 
+                            verify=certifi.where())            
 
-    with open("last-run.txt", "w") as f:
-        utc_datetime = pytz.utc.localize(datetime.datetime.utcnow())
-        swiss_datetime = utc_datetime.astimezone(
-            pytz.timezone("Europe/Zurich"))
-        f.write(str(swiss_datetime))        
+    if run_mode == "operational":
+        with open("last-run.txt", "w") as f:
+            utc_datetime = pytz.utc.localize(datetime.datetime.utcnow())
+            swiss_datetime = utc_datetime.astimezone(
+                pytz.timezone("Europe/Zurich"))
+            f.write(str(swiss_datetime))
