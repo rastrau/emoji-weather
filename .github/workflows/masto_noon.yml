@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
   
 env:
+  RUN_MODE: 'operational'
   OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
   MASTODON_TOKEN_WEATHER: ${{ secrets.MASTODON_TOKEN_WEATHER }}
   MASTODON_TOKEN_WIND: ${{ secrets.MASTODON_TOKEN_WIND }}

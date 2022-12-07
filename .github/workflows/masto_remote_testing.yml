@@ -1,12 +1,11 @@
-name: Toot Afternoon Weather
+name: Test-Toot Weather
 
 on:
-  schedule:
-  - cron:  '30 12 * * *'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   
 env:
+  RUN_MODE: 'remote testing'
   OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
   MASTODON_TOKEN_WEATHER: ${{ secrets.MASTODON_TOKEN_WEATHER }}
   MASTODON_TOKEN_WIND: ${{ secrets.MASTODON_TOKEN_WIND }}
@@ -36,11 +35,3 @@ jobs:
     - name: Run Python script
       run: python emoji-weather-mastodon.py
       
-    - name: Push 'keep-alive' file to repo
-      uses: github-actions-x/commit@v2.9
-      with:
-        push-branch: 'main'
-        commit-message: 'Sent weather forecast'
-        force-add: 'true'
-        files: last-run.txt
-        name: autoupdate
