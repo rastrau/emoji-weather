@@ -403,7 +403,7 @@ if __name__ == "__main__":
         r = requests.post(MASTODON_URL, 
                             headers={"Authorization": "Bearer %s" % (MASTODON_LIGHT_TOKEN_WEATHER)},
                             data={ "status": weather_texts_light[i].encode("utf8")}, 
-                            verify=false)
+                            verify=False)
         if not r.ok:
             print("Post request was not successful.")
             print("\tStatus code: %s / %s" % (r.status_code, r.reason))
