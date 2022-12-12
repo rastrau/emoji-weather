@@ -293,8 +293,8 @@ if __name__ == "__main__":
         TARGET_TIMES_LOCAL = os.environ.get("TARGET_TIMES_LOCAL")
         TARGET_TIMES_HUMAN = os.environ.get("TARGET_TIMES_HUMAN")
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
-        MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_WEATHER")
-        MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_WIND")
+        MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_DARK_TOKEN_WEATHER")
+        MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_DARK_TOKEN_WIND")
         MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_LIGHT_TOKEN_WEATHER")
         MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_LIGHT_TOKEN_WIND")
     elif run_mode == "remote testing":
@@ -319,6 +319,19 @@ if __name__ == "__main__":
         
     TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
     TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
+    
+    print(type(MASTODON_DARK_TOKEN_WEATHER))
+    print(type(MASTODON_DARK_TOKEN_WIND))
+    print(type(MASTODON_LIGHT_TOKEN_WEATHER))
+    print(type(MASTODON_LIGHT_TOKEN_WIND))
+    if MASTODON_DARK_TOKEN_WEATHER: 
+        print(len(MASTODON_DARK_TOKEN_WEATHER))
+    if MASTODON_DARK_TOKEN_WIND:
+        print(len(MASTODON_DARK_TOKEN_WIND))
+    if MASTODON_LIGHT_TOKEN_WEATHER:
+        print(len(MASTODON_LIGHT_TOKEN_WEATHER))
+    if MASTODON_LIGHT_TOKEN_WIND:
+        print(len(MASTODON_LIGHT_TOKEN_WIND))
     
     config = Config.Config()   
     OPENWEATHERMAP_URL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=%s" % OPENWEATHERMAP_API_KEY
