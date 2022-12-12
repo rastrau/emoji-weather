@@ -304,10 +304,10 @@ if __name__ == "__main__":
         TARGET_TIMES_LOCAL = "09:00"
         TARGET_TIMES_HUMAN = "Morning"
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
-        MASTO_DARK_WEATHER = os.environ.get("MASTO_TEST_TOKEN")
-        MASTO_DARK_WIND = os.environ.get("MASTO_TEST_TOKEN")
-        MASTO_LIGHT_WEATHER = os.environ.get("MASTO_TEST_TOKEN")
-        MASTO_LIGHT_WIND = os.environ.get("MASTO_TEST_TOKEN")
+        MASTO_DARK_WEATHER = os.environ.get("MASTO_DARK_WEATHER")
+        MASTO_DARK_WIND = os.environ.get("MASTO_DARK_WIND")
+        MASTO_LIGHT_WEATHER = os.environ.get("MASTO_LIGHT_WEATHER")
+        MASTO_LIGHT_WIND = os.environ.get("MASTO_LIGHT_WIND")
     else:
         print("Configuring run mode '%s'" % run_mode)
         run_mode = "local testing"
