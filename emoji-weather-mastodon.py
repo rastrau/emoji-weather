@@ -295,19 +295,19 @@ if __name__ == "__main__":
         TARGET_TIMES_LOCAL = os.environ.get("TARGET_TIMES_LOCAL")
         TARGET_TIMES_HUMAN = os.environ.get("TARGET_TIMES_HUMAN")
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
-        MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_DARK_TOKEN_WEATHER")
-        MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_DARK_TOKEN_WIND")
-        MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_LIGHT_TOKEN_WEATHER")
-        MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_LIGHT_TOKEN_WIND")
+        MASTO_DARK_WEATHER = os.environ.get("MASTO_DARK_WEATHER")
+        MASTO_DARK_WIND = os.environ.get("MASTO_DARK_WIND")
+        MASTO_LIGHT_WEATHER = os.environ.get("MASTO_LIGHT_WEATHER")
+        MASTO_LIGHT_WIND = os.environ.get("MASTO_LIGHT_WIND")
     elif run_mode == "remote testing":
         print("Configuring run mode '%s'" % run_mode)
         TARGET_TIMES_LOCAL = "09:00"
         TARGET_TIMES_HUMAN = "Morning"
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
-        MASTODON_DARK_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
-        MASTODON_DARK_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
-        MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
-        MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
+        MASTO_DARK_WEATHER = os.environ.get("MASTO_TEST_TOKEN")
+        MASTO_DARK_WIND = os.environ.get("MASTO_TEST_TOKEN")
+        MASTO_LIGHT_WEATHER = os.environ.get("MASTO_TEST_TOKEN")
+        MASTO_LIGHT_WIND = os.environ.get("MASTO_TEST_TOKEN")
     else:
         print("Configuring run mode '%s'" % run_mode)
         run_mode = "local testing"
@@ -316,40 +316,40 @@ if __name__ == "__main__":
         with open("secrets.txt", "r") as in_file:
             parameters = in_file.readlines()
         OPENWEATHERMAP_API_KEY = parameters[0].strip()
-        MASTODON_DARK_TOKEN_WEATHER = parameters[1].strip()
-        MASTODON_DARK_TOKEN_WIND = parameters[1].strip()
-        MASTODON_LIGHT_TOKEN_WEATHER = parameters[1].strip()
-        MASTODON_LIGHT_TOKEN_WIND = parameters[1].strip()
+        MASTO_DARK_WEATHER = parameters[1].strip()
+        MASTO_DARK_WIND = parameters[1].strip()
+        MASTO_LIGHT_WEATHER = parameters[1].strip()
+        MASTO_LIGHT_WIND = parameters[1].strip()
         
     TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
     TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
     
     print(type(OPENWEATHERMAP_API_KEY))
-    print(type(MASTODON_DARK_TOKEN_WEATHER))
-    print(type(MASTODON_DARK_TOKEN_WIND))
-    print(type(MASTODON_LIGHT_TOKEN_WEATHER))
-    print(type(MASTODON_LIGHT_TOKEN_WIND))
+    print(type(MASTO_DARK_WEATHER))
+    print(type(MASTO_DARK_WIND))
+    print(type(MASTO_LIGHT_WEATHER))
+    print(type(MASTO_LIGHT_WIND))
     print(OPENWEATHERMAP_API_KEY)
-    if MASTODON_DARK_TOKEN_WEATHER: 
-        print(len(MASTODON_DARK_TOKEN_WEATHER))
-    if MASTODON_DARK_TOKEN_WIND:
-        print(len(MASTODON_DARK_TOKEN_WIND))
-    if MASTODON_LIGHT_TOKEN_WEATHER:
-        print(len(MASTODON_LIGHT_TOKEN_WEATHER))
-    if MASTODON_LIGHT_TOKEN_WIND:
-        print(len(MASTODON_LIGHT_TOKEN_WIND))
+    if MASTO_DARK_WEATHER: 
+        print(len(MASTO_DARK_WEATHER))
+    if MASTO_DARK_WIND:
+        print(len(MASTO_DARK_WIND))
+    if MASTO_LIGHT_WEATHER:
+        print(len(MASTO_LIGHT_WEATHER))
+    if MASTO_LIGHT_WIND:
+        print(len(MASTO_LIGHT_WIND))
     
     config = Config.Config()   
     OPENWEATHERMAP_URL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=%s" % OPENWEATHERMAP_API_KEY
     MASTODON_URL = "https://tooting.ch"
     masto_light_weather = Mastodon(api_base_url = MASTODON_URL,
-                                   access_token = MASTODON_LIGHT_TOKEN_WEATHER)
+                                   access_token = MASTO_LIGHT_WEATHER)
     masto_dark_weather = Mastodon(api_base_url = MASTODON_URL,
-                                  access_token = MASTODON_DARK_TOKEN_WEATHER)
-    masto_light_wind = Mastodon(api_base_url = MASTODON_URL,
-                                access_token = MASTODON_LIGHT_TOKEN_WIND)
+                                  access_token = MASTO_DARK_WEATHER)
+    MASTO_LIGHT_WEATHER = Mastodon(api_base_url = MASTODON_URL,
+                                access_token = MASTO_LIGHT_WIND)
     masto_dark_wind = Mastodon(api_base_url = MASTODON_URL,
-                                  access_token = MASTODON_DARK_TOKEN_WIND)
+                                  access_token = MASTO_DARK_WIND)
 
     weather_texts_light = []
     temperature_texts_light = []
@@ -433,9 +433,9 @@ if __name__ == "__main__":
         time.sleep(2)
         masto_light_weather.toot(temperature_texts_light[i].encode("utf8"))
         time.sleep(2)
-        masto_light_wind.toot(winddirection_texts_light[i].encode("utf8")) 
+        MASTO_LIGHT_WEATHER.toot(winddirection_texts_light[i].encode("utf8")) 
         time.sleep(2)
-        masto_light_wind.toot(windspeed_texts_light[i].encode("utf8")) 
+        MASTO_LIGHT_WEATHER.toot(windspeed_texts_light[i].encode("utf8")) 
         time.sleep(2)
         masto_dark_weather.toot(weather_texts_dark[i].encode("utf8")) 
         time.sleep(2)
