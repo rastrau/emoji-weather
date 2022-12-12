@@ -4,14 +4,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
   
-env:
-  RUN_MODE: 'remote testing'
-  OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
-  MASTODON_TOKEN_WEATHER: ${{ secrets.MASTODON_TOKEN_WEATHER }}
-  MASTODON_TOKEN_WIND: ${{ secrets.MASTODON_TOKEN_WIND }}
-  TARGET_TIMES_LOCAL: '20:00'
-  TARGET_TIMES_HUMAN: 'Evening' 
-
 jobs:
   toot-weather:
 
@@ -34,4 +26,14 @@ jobs:
     
     - name: Run Python script
       run: python emoji-weather-mastodon.py
+      env:
+        RUN_MODE: 'remote testing'
+        OPENWEATHERMAP_API_KEY: ${{ secrets.OPENWEATHERMAP_API_KEY }}
+        MASTODON_TOKEN_WEATHER: ${{ secrets.MASTODON_TOKEN_WEATHER }}
+        MASTODON_TOKEN_WIND: ${{ secrets.MASTODON_TOKEN_WIND }}
+        MASTODON_LIGHT_TOKEN_WEATHER: ${{ secrets.MASTODON_LIGHT_TOKEN_WEATHER }}
+        MASTODON_LIGHT_TOKEN_WIND: ${{ secrets.MASTODON_LIGHT_TOKEN_WIND }}
+        TARGET_TIMES_LOCAL: '20:00'
+        TARGET_TIMES_HUMAN: 'Evening' 
+
       
