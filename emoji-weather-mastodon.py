@@ -324,21 +324,6 @@ if __name__ == "__main__":
     TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
     TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
     
-    print(type(OPENWEATHERMAP_API_KEY))
-    print(type(MASTO_DARK_WEATHER))
-    print(type(MASTO_DARK_WIND))
-    print(type(MASTO_LIGHT_WEATHER))
-    print(type(MASTO_LIGHT_WIND))
-    print(OPENWEATHERMAP_API_KEY)
-    if MASTO_DARK_WEATHER: 
-        print(len(MASTO_DARK_WEATHER))
-    if MASTO_DARK_WIND:
-        print(len(MASTO_DARK_WIND))
-    if MASTO_LIGHT_WEATHER:
-        print(len(MASTO_LIGHT_WEATHER))
-    if MASTO_LIGHT_WIND:
-        print(len(MASTO_LIGHT_WIND))
-    
     config = Config.Config()   
     OPENWEATHERMAP_URL = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid=%s" % OPENWEATHERMAP_API_KEY
     MASTODON_URL = "https://tooting.ch"
@@ -430,19 +415,19 @@ if __name__ == "__main__":
         print("Tooting weather...")
         
         masto_light_weather.toot(weather_texts_light[i].encode("utf8"))
-        time.sleep(2)
+        time.sleep(5)
         masto_light_weather.toot(temperature_texts_light[i].encode("utf8"))
-        time.sleep(2)
+        time.sleep(5)
         MASTO_LIGHT_WEATHER.toot(winddirection_texts_light[i].encode("utf8")) 
-        time.sleep(2)
+        time.sleep(5)
         MASTO_LIGHT_WEATHER.toot(windspeed_texts_light[i].encode("utf8")) 
-        time.sleep(2)
+        time.sleep(5)
         masto_dark_weather.toot(weather_texts_dark[i].encode("utf8")) 
-        time.sleep(2)
+        time.sleep(5)
         masto_dark_weather.toot(temperature_texts_dark[i].encode("utf8")) 
-        time.sleep(2)
+        time.sleep(5)
         masto_dark_wind.toot(winddirection_texts_dark[i].encode("utf8"))
-        time.sleep(2)
+        time.sleep(5)
         masto_dark_wind.toot(windspeed_texts_dark[i].encode("utf8"))
         
     if run_mode == "operational":
