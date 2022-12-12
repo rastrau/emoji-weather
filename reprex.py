@@ -6,7 +6,7 @@ from mastodon import Mastodon
     
 if __name__ == "__main__":
    
-    MASTODON_ACCESS_TOKEN = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
+    MASTODON_ACCESS_TOKEN = os.environ.get("MASTODON_ACCESS_TOKEN")
     MASTODON_URL = "https://tooting.ch"
     print(type(MASTODON_ACCESS_TOKEN))
     print(MASTODON_ACCESS_TOKEN)
