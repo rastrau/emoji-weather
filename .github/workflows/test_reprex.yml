@@ -27,5 +27,5 @@ jobs:
     - name: Run Python script
       run: python reprex.py
       env:
-        MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+        MASTO_TEST_TOKEN: ${{ secrets.MASTO_TEST_TOKEN }}
       
