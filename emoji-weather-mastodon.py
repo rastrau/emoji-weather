@@ -284,12 +284,14 @@ def switch_light_to_dark_mode(text):
 if __name__ == "__main__":
    
     run_mode = os.environ.get("RUN_MODE")
+    print("Run mode: %s" % run_mode)
     # run_mode can be:
     # - "operational" → for running the bots operationally using GitHub Actions
     # - "remote testing" → for test-running using GitHub Actions and tooting through @meteo_test_45618761@tooting.ch
     # - "local" → for test-running on the local machine (needs 'secrets.txt') and tooting through @meteo_test_45618761@tooting.ch as well as saving the toots to disk
     
     if run_mode == "operational":    
+        print("Configuring run mode '%s'" % run_mode)
         TARGET_TIMES_LOCAL = os.environ.get("TARGET_TIMES_LOCAL")
         TARGET_TIMES_HUMAN = os.environ.get("TARGET_TIMES_HUMAN")
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
@@ -298,6 +300,7 @@ if __name__ == "__main__":
         MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_LIGHT_TOKEN_WEATHER")
         MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_LIGHT_TOKEN_WIND")
     elif run_mode == "remote testing":
+        print("Configuring run mode '%s'" % run_mode)
         TARGET_TIMES_LOCAL = "09:00"
         TARGET_TIMES_HUMAN = "Morning"
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY") 
@@ -306,6 +309,7 @@ if __name__ == "__main__":
         MASTODON_LIGHT_TOKEN_WEATHER = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
         MASTODON_LIGHT_TOKEN_WIND = os.environ.get("MASTODON_TOKEN_TEST_ACCOUNT")
     else:
+        print("Configuring run mode '%s'" % run_mode)
         run_mode = "local testing"
         TARGET_TIMES_LOCAL = "20:00" # can be, e.g. "09:00,15:00,20:00"
         TARGET_TIMES_HUMAN = "Evening" # can be, e.g. "Morning,Afternoon,Evening"
