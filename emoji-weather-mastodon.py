@@ -331,7 +331,7 @@ if __name__ == "__main__":
                                    access_token = MASTO_LIGHT_WEATHER)
     masto_dark_weather = Mastodon(api_base_url = MASTODON_URL,
                                   access_token = MASTO_DARK_WEATHER)
-    MASTO_LIGHT_WEATHER = Mastodon(api_base_url = MASTODON_URL,
+    masto_light_wind = Mastodon(api_base_url = MASTODON_URL,
                                 access_token = MASTO_LIGHT_WIND)
     masto_dark_wind = Mastodon(api_base_url = MASTODON_URL,
                                   access_token = MASTO_DARK_WIND)
@@ -418,9 +418,9 @@ if __name__ == "__main__":
         time.sleep(5)
         masto_light_weather.toot(temperature_texts_light[i].encode("utf8"))
         time.sleep(5)
-        MASTO_LIGHT_WEATHER.toot(winddirection_texts_light[i].encode("utf8")) 
+        masto_light_wind.toot(winddirection_texts_light[i].encode("utf8")) 
         time.sleep(5)
-        MASTO_LIGHT_WEATHER.toot(windspeed_texts_light[i].encode("utf8")) 
+        masto_light_wind.toot(windspeed_texts_light[i].encode("utf8")) 
         time.sleep(5)
         masto_dark_weather.toot(weather_texts_dark[i].encode("utf8")) 
         time.sleep(5)
