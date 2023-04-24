@@ -11,6 +11,8 @@ import codecs
 import numpy as np
 import Config
 from mastodon import Mastodon
+from linkedin_api.clients.restli.client import RestliClient
+import json
 
 
 class MeteoMap:
@@ -282,8 +284,17 @@ def switch_light_to_dark_mode(text):
     return text
     
 if __name__ == "__main__":
+    LINKEDIN_ACCESS_TOKEN = ""
+    LINKEDIN_API_VERSION = "202302"
+
+    restli_client = RestliClient()
+    me_response = restli_client.get(resource_path="/me", access_token = LINKEDIN_ACCESS_TOKEN)
+    print(f"Successfully fetched profile: {json.dumps(me_response.entity)}")
    
-    run_mode = os.environ.get("RUN_MODE")
+
+    run_mode = "local testing"
+
+    # run_mode = os.environ.get("RUN_MODE")
     print("Run mode: %s" % run_mode)
     # run_mode can be:
     # - "operational" → for running the bots operationally using GitHub Actions
@@ -410,6 +421,74 @@ if __name__ == "__main__":
             for windspeed_tweet in windspeed_texts_dark:
                 f.write(windspeed_tweet)
                 f.write("--------------------------------------------\n")         
+
+        posts_create_response = restli_client.create(
+            resource_path = "/posts",
+            entity={
+                "author": f"urn:li:person:{me_response.entity['id']}",
+                "lifecycleState": "PUBLISHED",
+                "visibility": "PUBLIC",
+                "commentary": weather_texts_light[0].encode("utf8"),
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": [],
+                },
+            },
+            version_string = LINKEDIN_API_VERSION,
+            access_token = LINKEDIN_ACCESS_TOKEN,
+        )
+
+        posts_create_response = restli_client.create(
+            resource_path = "/posts",
+            entity={
+                "author": f"urn:li:person:{me_response.entity['id']}",
+                "lifecycleState": "PUBLISHED",
+                "visibility": "PUBLIC",
+                "commentary": temperature_texts_light[0].encode("utf8"),
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": [],
+                },
+            },
+            version_string = LINKEDIN_API_VERSION,
+            access_token = LINKEDIN_ACCESS_TOKEN,
+        )
+
+        posts_create_response = restli_client.create(
+            resource_path = "/posts",
+            entity={
+                "author": f"urn:li:person:{me_response.entity['id']}",
+                "lifecycleState": "PUBLISHED",
+                "visibility": "PUBLIC",
+                "commentary": winddirection_texts_light[0].encode("utf8"),
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": [],
+                },
+            },
+            version_string = LINKEDIN_API_VERSION,
+            access_token = LINKEDIN_ACCESS_TOKEN,
+        )
+
+        posts_create_response = restli_client.create(
+            resource_path = "/posts",
+            entity={
+                "author": f"urn:li:person:{me_response.entity['id']}",
+                "lifecycleState": "PUBLISHED",
+                "visibility": "PUBLIC",
+                "commentary": windspeed_texts_light[0].encode("utf8"),
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": [],
+                },
+            },
+            version_string = LINKEDIN_API_VERSION,
+            access_token = LINKEDIN_ACCESS_TOKEN,
+        )
                    
     for i in range(0, len(weather_texts_light)):
         print("Tooting weather...")
