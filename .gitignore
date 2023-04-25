@@ -1,5 +1,4 @@
-secrets.txt
+Secrets.py
 Config.pyc
-__pycache__/Config.cpython-39.pyc
-toots.txt
-*.secret
+test-forecast-texts.txt
+__pycache__/*
