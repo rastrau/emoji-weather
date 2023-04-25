@@ -12,7 +12,6 @@ import numpy as np
 import Config
 from mastodon import Mastodon
 from linkedin_api.clients.restli.client import RestliClient
-import json
 
 
 class MeteoMap:
@@ -311,8 +310,8 @@ def find_forecast(data, target_time_local):
         offset = abs(offset.total_seconds() / 3600)
         if offset < min_offset:
             min_offset = offset
-            index = i
-    return index
+            target_index = i
+    return target_index
 
 
 def parse_meteodata(json_data, target_time_local):
@@ -363,45 +362,54 @@ if __name__ == "__main__":
     run_mode = os.environ.get("RUN_MODE")
     print("Run mode: %s" % run_mode)
     # run_mode can be:
-    # - "operational" → for running the bots operationally using GitHub Actions
-    # - "remote testing" → for test-running using GitHub Actions and tooting through @meteo_test_45618761@tooting.ch
-    # - "local" → for test-running on the local machine (needs 'secrets.txt') and tooting through @meteo_test_45618761@tooting.ch as well as saving the toots to disk
+    # - "operational" →    for running the bots operationally using GitHub Actions
+    # - "remote testing" → for test-running using GitHub Actions; will toot through
+    #                      @meteo_test_45618761@tooting.ch
+    # - undefined
+    #   (equates to
+    #   "local") →         for test-running on the local machine (needs 'Secrets.py')
+    #                      and will toot through @meteo_test_45618761@tooting.ch as
+    #                      well as saving the toots to disk
 
+    # Set constants depending on the run_mode
     if run_mode == "operational":
         print("Configuring run mode '%s'" % run_mode)
-        TARGET_TIMES_LOCAL = os.environ.get("TARGET_TIMES_LOCAL")
-        TARGET_TIMES_HUMAN = os.environ.get("TARGET_TIMES_HUMAN")
+        TARGET_TIME_LOCAL = os.environ.get("TARGET_TIME_LOCAL")
+        TARGET_TIME_HUMAN = os.environ.get("TARGET_TIME_HUMAN")
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
-        MASTO_DARK_WEATHER = os.environ.get("MASTO_DARK_WEATHER")
-        MASTO_DARK_WIND = os.environ.get("MASTO_DARK_WIND")
-        MASTO_LIGHT_WEATHER = os.environ.get("MASTO_LIGHT_WEATHER")
-        MASTO_LIGHT_WIND = os.environ.get("MASTO_LIGHT_WIND")
         LINKEDIN_ACCESS_TOKEN = os.environ.get("LINKEDIN_ACCESS_TOKEN")
         LINKEDIN_PERSONAL_URN_ID = os.environ.get("LINKEDIN_PERSONAL_URN_ID")
-    elif run_mode == "remote testing":
-        print("Configuring run mode '%s'" % run_mode)
-        TARGET_TIMES_LOCAL = "09:00"
-        TARGET_TIMES_HUMAN = "Morning"
-        OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
         MASTO_DARK_WEATHER = os.environ.get("MASTO_DARK_WEATHER")
         MASTO_DARK_WIND = os.environ.get("MASTO_DARK_WIND")
         MASTO_LIGHT_WEATHER = os.environ.get("MASTO_LIGHT_WEATHER")
         MASTO_LIGHT_WIND = os.environ.get("MASTO_LIGHT_WIND")
-    else:
+    elif run_mode == "remote testing":
         print("Configuring run mode '%s'" % run_mode)
-        run_mode = "local testing"
-        TARGET_TIMES_LOCAL = "20:00"  # can be, e.g. "09:00,15:00,20:00"
-        TARGET_TIMES_HUMAN = "Evening"  # can be, e.g. "Morning,Afternoon,Evening"
-        with open("secrets.txt", "r") as in_file:
-            parameters = in_file.readlines()
-        OPENWEATHERMAP_API_KEY = parameters[0].strip()
-        MASTO_DARK_WEATHER = parameters[1].strip()
-        MASTO_DARK_WIND = parameters[1].strip()
-        MASTO_LIGHT_WEATHER = parameters[1].strip()
-        MASTO_LIGHT_WIND = parameters[1].strip()
+        TARGET_TIME_LOCAL = "09:00"
+        TARGET_TIME_HUMAN = "Morning"
+        OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
+        LINKEDIN_ACCESS_TOKEN = os.environ.get("LINKEDIN_ACCESS_TOKEN")
+        LINKEDIN_PERSONAL_URN_ID = os.environ.get("LINKEDIN_PERSONAL_URN_ID")
+        MASTO_DARK_WEATHER = os.environ.get("MASTO_TEST_TOKEN")
+        MASTO_DARK_WIND = MASTO_DARK_WEATHER
+        MASTO_LIGHT_WEATHER = MASTO_DARK_WEATHER
+        MASTO_LIGHT_WIND = MASTO_DARK_WEATHER
+    else:
+        import Secrets
 
-    TARGET_TIMES_LOCAL = TARGET_TIMES_LOCAL.split(",")
-    TARGET_TIMES_HUMAN = TARGET_TIMES_HUMAN.split(",")
+        print("→ Configuring run mode 'local testing'")
+        run_mode = "local testing"
+        secrets = Secrets.Secrets()
+        TARGET_TIME_LOCAL = "20:00"
+        TARGET_TIME_HUMAN = "Evening"  # can be, e.g. "Morning",
+        # "Afternoon", or "Evening"
+        OPENWEATHERMAP_API_KEY = secrets.OPENWEATHERMAP_API_KEY
+        MASTO_DARK_WEATHER = secrets.MASTO_TEST_TOKEN
+        MASTO_DARK_WIND = MASTO_DARK_WEATHER
+        MASTO_LIGHT_WEATHER = MASTO_DARK_WEATHER
+        MASTO_LIGHT_WIND = MASTO_DARK_WEATHER
+        LINKEDIN_ACCESS_TOKEN = secrets.LINKEDIN_ACCESS_TOKEN
+        LINKEDIN_PERSONAL_URN_ID = secrets.LINKEDIN_PERSONAL_URN_ID
 
     config = Config.Config()
     OPENWEATHERMAP_URL = (
@@ -422,146 +430,119 @@ if __name__ == "__main__":
 
     LINKEDIN_API_VERSION = "202302"
 
-    weather_texts_light = []
-    temperature_texts_light = []
-    winddirection_texts_light = []
-    windspeed_texts_light = []
-    weather_texts_dark = []
-    temperature_texts_dark = []
-    winddirection_texts_dark = []
-    windspeed_texts_dark = []
+    # Obtain weather information from API
+    meteomap = MeteoMap()
+    for i in range(1, 85):
+        (lat, lon) = config.locations.get(i, (None, None))
+        if lat:
+            time.sleep(0.2)
+            this_url = OPENWEATHERMAP_URL.replace("{lat}", str(lat)).replace(
+                "{lon}", str(lon)
+            )
+            response = requests.get(this_url)
+            meteodatum = parse_meteodata(response.json(), TARGET_TIME_LOCAL)
+            meteomap.add_datum(i, meteodatum)
 
-    for j in range(0, len(TARGET_TIMES_LOCAL)):
-        meteomap = MeteoMap()
-        for i in range(1, 85):
-            (lat, lon) = config.locations.get(i, (None, None))
-            if lat:
-                time.sleep(0.2)
-                this_url = OPENWEATHERMAP_URL.replace("{lat}", str(lat)).replace(
-                    "{lon}", str(lon)
-                )
-                # print("Querying %s (%s)..." % (this_url, i))
-                response = requests.get(this_url)
+    # Compile forecast texts in light and dark modes
+    print("\nCompiling weather forecast text...")
+    weather_text_light = meteomap.compile_weather_text(TARGET_TIME_HUMAN)
+    weather_text_dark = switch_light_to_dark_mode(weather_text_light)
 
-                # print("Parsing API result for time %s (%s)..." % (TARGET_TIMES_LOCAL[j], TARGET_TIMES_HUMAN[j]))
-                meteodatum = parse_meteodata(response.json(), TARGET_TIMES_LOCAL[j])
-                meteomap.add_datum(i, meteodatum)
+    print("Compiling temperature forecast text...")
+    temperature_text_light = meteomap.compile_temperature_text(TARGET_TIME_HUMAN)
+    temperature_text_dark = switch_light_to_dark_mode(temperature_text_light)
 
-        print("\nCompiling weather toot(s)...")
-        weather_toot_light = meteomap.compile_weather_text(TARGET_TIMES_HUMAN[j])
-        weather_texts_light.append(weather_toot_light)
-        weather_texts_dark.append(switch_light_to_dark_mode(weather_toot_light))
+    print("Compiling wind-direction forecast text...")
+    winddirection_text_light = meteomap.compile_winddirection_text(TARGET_TIME_HUMAN)
+    winddirection_text_dark = switch_light_to_dark_mode(winddirection_text_light)
 
-        print("Compiling temperature toot(s)...")
-        temperature_toot_light = meteomap.compile_temperature_text(
-            TARGET_TIMES_HUMAN[j]
-        )
-        temperature_texts_light.append(temperature_toot_light)
-        temperature_texts_dark.append(switch_light_to_dark_mode(temperature_toot_light))
-
-        print("Compiling wind-direction toot(s)...")
-        winddirection_toot_light = meteomap.compile_winddirection_text(
-            TARGET_TIMES_HUMAN[j]
-        )
-        winddirection_texts_light.append(winddirection_toot_light)
-        winddirection_texts_dark.append(
-            switch_light_to_dark_mode(winddirection_toot_light)
-        )
-
-        print("Compiling wind-speed toot(s)...")
-        windspeed_toot_light = meteomap.compile_windspeed_text(TARGET_TIMES_HUMAN[j])
-        windspeed_texts_light.append(windspeed_toot_light)
-        windspeed_texts_dark.append(switch_light_to_dark_mode(windspeed_toot_light))
+    print("Compiling wind-speed forecast text...")
+    windspeed_text_light = meteomap.compile_windspeed_text(TARGET_TIME_HUMAN)
+    windspeed_text_dark = switch_light_to_dark_mode(windspeed_text_light)
 
     if run_mode == "local testing":
-        with codecs.open("toots.txt", "w", "utf8") as f:
-            f.write("LIGHT MODE:")
-            f.write("--------------------------------------------\n")
-            for weather_tweet in weather_texts_light:
-                f.write(weather_tweet)
-                f.write("--------------------------------------------\n")
-            for temperature_tweet in temperature_texts_light:
-                f.write(temperature_tweet)
-                f.write("--------------------------------------------\n")
-            for winddirection_tweet in winddirection_texts_light:
-                f.write(winddirection_tweet)
-                f.write("--------------------------------------------\n")
-            for windspeed_tweet in windspeed_texts_light:
-                f.write(windspeed_tweet)
-                f.write("--------------------------------------------\n")
-            f.write("DARK MODE:")
-            f.write("--------------------------------------------\n")
-            for weather_tweet in weather_texts_dark:
-                f.write(weather_tweet)
-                f.write("--------------------------------------------\n")
-            for temperature_tweet in temperature_texts_dark:
-                f.write(temperature_tweet)
-                f.write("--------------------------------------------\n")
-            for winddirection_tweet in winddirection_texts_dark:
-                f.write(winddirection_tweet)
-                f.write("--------------------------------------------\n")
-            for windspeed_tweet in windspeed_texts_dark:
-                f.write(windspeed_tweet)
+        # Write forecasts to a file
+        with codecs.open("test-forecast-texts.txt", "w", "utf8") as f:
+            for content in [
+                "LIGHT MODE:",
+                weather_text_light,
+                temperature_text_light,
+                winddirection_text_light,
+                windspeed_text_light,
+                "DARK MODE:",
+                weather_text_dark,
+                temperature_text_dark,
+                winddirection_text_dark,
+                windspeed_text_dark,
+            ]:
+                f.write(content)
                 f.write("--------------------------------------------\n")
 
-    for i in range(0, len(weather_texts_light)):
-        print("Tooting weather...")
+    # Broadcast to Mastodon using the operational or the test account,
+    # depending on run_mode and configuration
+    print("Broadcasting forecasts on Mastodon...")
+    for content in [weather_text_light, temperature_text_light]:
+        masto_light_weather.toot(content.encode("utf8"))
+        time.sleep(2)
+    for content in [winddirection_text_light, windspeed_text_light]:
+        masto_light_wind.toot(content.encode("utf8"))
+        time.sleep(2)
+    for content in [weather_text_dark, temperature_text_dark]:
+        masto_dark_weather.toot(content.encode("utf8"))
+        time.sleep(2)
+    for content in [winddirection_text_dark, windspeed_text_dark]:
+        masto_dark_wind.toot(content.encode("utf8"))
+        time.sleep(2)
 
-        masto_light_weather.toot(weather_texts_light[i].encode("utf8"))
-        time.sleep(5)
-        masto_light_weather.toot(temperature_texts_light[i].encode("utf8"))
-        time.sleep(5)
-        masto_light_wind.toot(winddirection_texts_light[i].encode("utf8"))
-        time.sleep(5)
-        masto_light_wind.toot(windspeed_texts_light[i].encode("utf8"))
-        time.sleep(5)
-        masto_dark_weather.toot(weather_texts_dark[i].encode("utf8"))
-        time.sleep(5)
-        masto_dark_weather.toot(temperature_texts_dark[i].encode("utf8"))
-        time.sleep(5)
-        masto_dark_wind.toot(winddirection_texts_dark[i].encode("utf8"))
-        time.sleep(5)
-        masto_dark_wind.toot(windspeed_texts_dark[i].encode("utf8"))
+    # Broadcast to LinkedIn using the operational account (currently,
+    # there is no test account for LinkedIn)
 
-    if run_mode == "operational":
-        # If we run this script operationally, post also to LinkedIn
+    linkedin_broadcasting = False
+    if linkedin_broadcasting:
+        print("Broadcasting forecasts on LinkedIn...")
+        # Instantiate LinkedIn API client
         restli_client = RestliClient()
-        for i in range(0, len(weather_texts_light)):
-            posts_create_response = restli_client.create(
-                resource_path="/posts",
-                entity={
-                    "author": f"urn:li:person:{LINKEDIN_PERSONAL_URN_ID}",
-                    "lifecycleState": "PUBLISHED",
-                    "visibility": "PUBLIC",
-                    "commentary": make_linkedin_compatible(weather_texts_light[i]),
-                    "distribution": {
-                        "feedDistribution": "MAIN_FEED",
-                        "targetEntities": [],
-                        "thirdPartyDistributionChannels": [],
-                    },
+        # Broadcast weather and temperature forecast on LinkedIn
+        weather_text_light = make_linkedin_compatible(weather_text_light)
+        posts_create_response = restli_client.create(
+            resource_path="/posts",
+            entity={
+                "author": "urn:li:person:{LINKEDIN_PERSONAL_URN_ID}",
+                "lifecycleState": "PUBLISHED",
+                "visibility": "PUBLIC",
+                "commentary": weather_text_light,
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": [],
                 },
-                version_string=LINKEDIN_API_VERSION,
-                access_token=LINKEDIN_ACCESS_TOKEN,
-            )
-
-            posts_create_response = restli_client.create(
-                resource_path="/posts",
-                entity={
-                    "author": f"urn:li:person:{LINKEDIN_PERSONAL_URN_ID}",
-                    "lifecycleState": "PUBLISHED",
-                    "visibility": "PUBLIC",
-                    "commentary": make_linkedin_compatible(temperature_texts_light[i]),
-                    "distribution": {
-                        "feedDistribution": "MAIN_FEED",
-                        "targetEntities": [],
-                        "thirdPartyDistributionChannels": [],
-                    },
+            },
+            version_string=LINKEDIN_API_VERSION,
+            access_token=LINKEDIN_ACCESS_TOKEN,
+        )
+        temperature_text_light = make_linkedin_compatible(
+            temperature_text_light.strip()
+        )
+        posts_create_response = restli_client.create(
+            resource_path="/posts",
+            entity={
+                "author": "urn:li:person:{LINKEDIN_PERSONAL_URN_ID}",
+                "lifecycleState": "PUBLISHED",
+                "visibility": "PUBLIC",
+                "commentary": temperature_text_light,
+                "distribution": {
+                    "feedDistribution": "MAIN_FEED",
+                    "targetEntities": [],
+                    "thirdPartyDistributionChannels": [],
                 },
-                version_string=LINKEDIN_API_VERSION,
-                access_token=LINKEDIN_ACCESS_TOKEN,
-            )
+            },
+            version_string=LINKEDIN_API_VERSION,
+            access_token=LINKEDIN_ACCESS_TOKEN,
+        )
 
     if run_mode == "operational":
+        # Save 'keep-alive' file in order to keep GitHub Action
+        # running indefinitely
         with open("last-run.txt", "w") as f:
             utc_datetime = pytz.utc.localize(datetime.datetime.utcnow())
             swiss_datetime = utc_datetime.astimezone(pytz.timezone("Europe/Zurich"))
