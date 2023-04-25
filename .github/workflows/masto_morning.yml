@@ -35,8 +35,8 @@ jobs:
         MASTO_DARK_WIND: ${{ secrets.MASTO_DARK_WIND }}
         MASTO_LIGHT_WEATHER: ${{ secrets.MASTO_LIGHT_WEATHER }}
         MASTO_LIGHT_WIND: ${{ secrets.MASTO_LIGHT_WIND }}
-        TARGET_TIMES_LOCAL: '09:00'
-        TARGET_TIMES_HUMAN: 'Morning' 
+        TARGET_TIME_LOCAL: '09:00'
+        TARGET_TIME_HUMAN: 'Morning' 
       
     - name: Push 'keep-alive' file to repo
       uses: github-actions-x/commit@v2.9
