@@ -34,7 +34,7 @@ jobs:
         MASTO_DARK_WIND: ${{ secrets.MASTO_TEST_TOKEN }}
         MASTO_LIGHT_WEATHER: ${{ secrets.MASTO_TEST_TOKEN }}
         MASTO_LIGHT_WIND: ${{ secrets.MASTO_TEST_TOKEN }}
-        TARGET_TIMES_LOCAL: '20:00'
-        TARGET_TIMES_HUMAN: 'Evening' 
+        TARGET_TIME_LOCAL: '20:00'
+        TARGET_TIME_HUMAN: 'Evening' 
 
       
