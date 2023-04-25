@@ -525,6 +525,7 @@ if __name__ == "__main__":
 
     if run_mode == "operational":
         # If we run this script operationally, post also to LinkedIn
+        restli_client = RestliClient()
         for i in range(0, len(weather_texts_light)):
             posts_create_response = restli_client.create(
                 resource_path="/posts",
