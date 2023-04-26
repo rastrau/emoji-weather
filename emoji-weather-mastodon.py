@@ -11,7 +11,6 @@ import codecs
 import numpy as np
 import Config
 from mastodon import Mastodon
-from linkedin_api.clients.restli.client import RestliClient
 
 
 class MeteoMap:
@@ -348,16 +347,6 @@ def switch_light_to_dark_mode(text):
     return text
 
 
-def make_linkedin_compatible(text):
-    # Currently on Desktop (Edge browser), LinkedIn does not display
-    # country flags. Also, the small whitespace emoji (▫️) is not
-    # displayed with proper spacing. Both work fine in the mobile app,
-    # however.
-    text = text.replace("▫️", "⬜")
-    text = text.replace("🇫🇷", "⬜")
-    return text
-
-
 if __name__ == "__main__":
     run_mode = os.environ.get("RUN_MODE")
     print("Run mode: %s" % run_mode)
@@ -377,8 +366,6 @@ if __name__ == "__main__":
         TARGET_TIME_LOCAL = os.environ.get("TARGET_TIME_LOCAL")
         TARGET_TIME_HUMAN = os.environ.get("TARGET_TIME_HUMAN")
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
-        LINKEDIN_ACCESS_TOKEN = os.environ.get("LINKEDIN_ACCESS_TOKEN")
-        LINKEDIN_PERSONAL_URN_ID = os.environ.get("LINKEDIN_PERSONAL_URN_ID")
         MASTO_DARK_WEATHER = os.environ.get("MASTO_DARK_WEATHER")
         MASTO_DARK_WIND = os.environ.get("MASTO_DARK_WIND")
         MASTO_LIGHT_WEATHER = os.environ.get("MASTO_LIGHT_WEATHER")
@@ -388,8 +375,6 @@ if __name__ == "__main__":
         TARGET_TIME_LOCAL = "09:00"
         TARGET_TIME_HUMAN = "Morning"
         OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
-        LINKEDIN_ACCESS_TOKEN = os.environ.get("LINKEDIN_ACCESS_TOKEN")
-        LINKEDIN_PERSONAL_URN_ID = os.environ.get("LINKEDIN_PERSONAL_URN_ID")
         MASTO_DARK_WEATHER = os.environ.get("MASTO_TEST_TOKEN")
         MASTO_DARK_WIND = MASTO_DARK_WEATHER
         MASTO_LIGHT_WEATHER = MASTO_DARK_WEATHER
@@ -408,8 +393,6 @@ if __name__ == "__main__":
         MASTO_DARK_WIND = MASTO_DARK_WEATHER
         MASTO_LIGHT_WEATHER = MASTO_DARK_WEATHER
         MASTO_LIGHT_WIND = MASTO_DARK_WEATHER
-        LINKEDIN_ACCESS_TOKEN = secrets.LINKEDIN_ACCESS_TOKEN
-        LINKEDIN_PERSONAL_URN_ID = secrets.LINKEDIN_PERSONAL_URN_ID
 
     config = Config.Config()
     OPENWEATHERMAP_URL = (
@@ -427,8 +410,6 @@ if __name__ == "__main__":
         api_base_url=MASTODON_URL, access_token=MASTO_LIGHT_WIND
     )
     masto_dark_wind = Mastodon(api_base_url=MASTODON_URL, access_token=MASTO_DARK_WIND)
-
-    LINKEDIN_API_VERSION = "202302"
 
     # Obtain weather information from API
     meteomap = MeteoMap()
@@ -493,52 +474,6 @@ if __name__ == "__main__":
     for content in [winddirection_text_dark, windspeed_text_dark]:
         masto_dark_wind.toot(content.encode("utf8"))
         time.sleep(2)
-
-    # Broadcast to LinkedIn using the operational account (currently,
-    # there is no test account for LinkedIn)
-
-    linkedin_broadcasting = False
-    if linkedin_broadcasting:
-        print("Broadcasting forecasts on LinkedIn...")
-        # Instantiate LinkedIn API client
-        restli_client = RestliClient()
-        # Broadcast weather and temperature forecast on LinkedIn
-        weather_text_light = make_linkedin_compatible(weather_text_light)
-        posts_create_response = restli_client.create(
-            resource_path="/posts",
-            entity={
-                "author": "urn:li:person:{LINKEDIN_PERSONAL_URN_ID}",
-                "lifecycleState": "PUBLISHED",
-                "visibility": "PUBLIC",
-                "commentary": weather_text_light,
-                "distribution": {
-                    "feedDistribution": "MAIN_FEED",
-                    "targetEntities": [],
-                    "thirdPartyDistributionChannels": [],
-                },
-            },
-            version_string=LINKEDIN_API_VERSION,
-            access_token=LINKEDIN_ACCESS_TOKEN,
-        )
-        temperature_text_light = make_linkedin_compatible(
-            temperature_text_light.strip()
-        )
-        posts_create_response = restli_client.create(
-            resource_path="/posts",
-            entity={
-                "author": "urn:li:person:{LINKEDIN_PERSONAL_URN_ID}",
-                "lifecycleState": "PUBLISHED",
-                "visibility": "PUBLIC",
-                "commentary": temperature_text_light,
-                "distribution": {
-                    "feedDistribution": "MAIN_FEED",
-                    "targetEntities": [],
-                    "thirdPartyDistributionChannels": [],
-                },
-            },
-            version_string=LINKEDIN_API_VERSION,
-            access_token=LINKEDIN_ACCESS_TOKEN,
-        )
 
     if run_mode == "operational":
         # Save 'keep-alive' file in order to keep GitHub Action
