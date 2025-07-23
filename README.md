@@ -1,7 +1,7 @@
 # emoji-weather
 
 ## About
-**A ~~[Twitter bot](https://twitter.com/tweteoswiss)~~ family of Mastodon bots that broadcast weather and temperature forecasts for Switzerland using emojis. Broadcasts are sent according to the following schedule:**
+**A ~~[Twitter bot](https://twitter.com/tweteoswiss)~~ family of [Mastodon](https://joinmastodon.org) bots that broadcast weather and temperature forecasts for Switzerland using emojis. Broadcasts are sent according to the following schedule:**
 - **in the morning (6:30 local time)**: forecasts for mid-morning
 - **at noon (11:45)**: forecasts for mid-afternoon
 - **in the afternoon (15:30)**: forecast for the evening
@@ -37,6 +37,66 @@
 
 ![](https://raw.githubusercontent.com/rastrau/emoji-weather/main/assets/mastodon-screenshots/emoji-winddir-5-cropped.png)
 
+## Explanation of symbols
+
+Temperature, wind speed, and wind direction forecasts are self-explanatory. The following symbols are used in the weather forecast:
+
+- light thunderstorm: 🌩️
+- thunderstorm: 🌩️
+- thunderstorm with light rain: 🌩️
+- thunderstorm with light drizzle: 🌩️
+- thunderstorm with drizzle: 🌩️
+- thunderstorm with heavy drizzle: ⛈️
+- thunderstorm with rain: ⛈️
+- thunderstorm with heavy rain: ⛈️
+- heavy thunderstorm: ⚡
+- ragged thunderstorm: ⚡
+- light intensity drizzle: ⛅
+- drizzle: 🌦️
+- light rain: 🌦️
+- heavy intensity drizzle: 🌦️
+- light intensity drizzle rain: 🌦️
+- drizzle rain: 🌧️
+- heavy intensity drizzle rain: 🌧️
+- moderate rain: 🌧️
+- heavy intensity rain: 💧
+- very heavy rain: 🐟
+- extreme rain: 🐟
+- heavy shower rain and drizzle: 💧
+- shower rain and drizzle: 🌧️
+- shower drizzle: 🌧️
+- freezing rain: 🌧️
+- light intensity shower rain: 🌦️
+- shower rain: 🌦️
+- heavy intensity shower rain: 🌧️
+- ragged shower rain: 🌦️
+- light snow: 🌨️
+- sleet: 🌨️
+- light shower sleet: 🌨️
+- shower sleet: ❄️
+- snow: ❄️
+- heavy snow: ☃️
+- light rain and snow: ❄️
+- rain and snow: ❄️
+- light shower snow: ❄️
+- shower snow: ❄️
+- heavy shower snow: ❄️
+- mist: 🌫️
+- smoke: 🌫️
+- haze: 🌫️
+- sand/ dust whirls: 🌫️
+- fog: 🌫️
+- sand: 🌫️
+- dust: 🌫️
+- volcanic ash: 🌫️
+- squalls: 💨
+- tornado: 🌪️
+- clear sky: 😎
+- few clouds: ☀️
+- scattered clouds: 🌤️
+- broken clouds: ⛅
+- overcast clouds: ☁️
+
 ## Data sources
 `emoji-weather` uses data from [OpenWeather](https://openweathermap.org). 
 
@@ -45,7 +105,7 @@ The map design is hand-crafted by me. It can be called a tile map, grid(ded) map
 ## Usage conditions and contributions
 Please [get in touch](mailto:emoji-weather@ralphstraumann.ch) if you would like to use this code or want to share an idea or suggestion.
 
-&mdash; [@rastrau@mstdn.social](https://mstdn.social/@rastrau) 
+&mdash; [@rastrau@swiss.social](https://swiss.social/@rastrau) 
 
 ## Post-scriptum
 
