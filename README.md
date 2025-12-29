@@ -102,6 +102,13 @@ Temperature, wind speed, and wind direction forecasts are self-explanatory. The 
 
 The map design is hand-crafted by me. It can be called a tile map, grid(ded) map, or cartogram. I like tile maps, you can see other examples I've made [here](https://github.com/ebp-group/Switzerland_Tilemap), [here](https://rastrau.shinyapps.io/covid-us), [here](https://rastrau.shinyapps.io/covid-eu), or [here](https://rastrau.shinyapps.io/covidmonitor/) (the latter three I've contributed to the [{geofacet}](https://hafen.github.io/geofacet/) package for R).
 
+## More background
+I published three blog posts (in German) that go into more detail regarding the map design, obtaining weather data, and running the emoji-weather bots:
+
+- [Map design](https://digital.ebp.ch/2023/04/17/wettervorhersage-in-social-media-teil-1-visualisierung/)
+- [Sampling locations, data, and programming](https://digital.ebp.ch/2023/04/20/wettervorhersage-in-social-media-teil-2-daten-und-programmierung/)
+- [Automation and deployment](https://digital.ebp.ch/2023/04/26/wettervorhersage-in-social-media-teil-3-automatisierung-und-cloud-deployment/)
+
 ## Usage conditions and contributions
 Please [get in touch](mailto:emoji-weather@ralphstraumann.ch) if you would like to use this code or want to share an idea or suggestion.
 
